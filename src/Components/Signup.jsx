@@ -6,7 +6,7 @@ import "./Signup.css"; // Import the CSS file
 
 const Signup = () => {
   const [formData, setFormData] = useState({
-    fullname: "",
+    full_name: "",
     email: "",
     username: "",
     password: "",
@@ -23,16 +23,16 @@ const Signup = () => {
 
   // Send OTP
   const sendOtp = async () => {
-    if (!formData.email || !formData.fullname) {
+    if (!formData.email || !formData.full_name) {
       alert("Please enter your full name and email before sending OTP.");
       return;
     }
 
     try {
-      const response = await fetch("/send-otp", {
+      const response = await fetch("http://localhost:5000/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: formData.email, fullname: formData.fullname }),
+        body: JSON.stringify({ email: formData.email, fullname: formData.full_name }),
       });
 
       if (response.ok) {
@@ -57,7 +57,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("/verify-otp", {
+      const response = await fetch("http://localhost:5000/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -78,16 +78,7 @@ const Signup = () => {
   return (
     <div 
     className="signup-page" 
-    style={{ 
-        backgroundImage: `url(${signupBg})`, 
-        backgroundSize: "cover", 
-        backgroundPosition: "center",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center"
-    }}
+    
     >
       <Header /> {/* Include Header component */}
       <div className="signup-container">
@@ -95,7 +86,7 @@ const Signup = () => {
           <h2>Create an Account</h2>
 
           <label>Full Name:</label>
-          <input type="text" name="fullname" placeholder="Enter your full name" required onChange={handleChange} />
+          <input type="text" name="full_name" placeholder="Enter your full name" required onChange={handleChange} />
 
           <label>Email:</label>
           <input type="email" name="email" placeholder="Enter your email address" required onChange={handleChange} />

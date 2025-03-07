@@ -15,9 +15,10 @@ const Home = () => {
       home: "/home",
       service: "/service",
       portfolio: "/portfolio",
-      "contact us": "/contact",
-      invoice: "/invoice",
-      contact: "/newcontact",
+      contactus : "/ContactUs",
+      invoice: "/InvoiceGenerator",
+      contact: "/ContactManager",
+      logout : "/Dashboard",
     };
 
     if (pages[searchQuery.toLowerCase().trim()]) {
@@ -31,16 +32,6 @@ const Home = () => {
 
   return (
     <div className="home-container"
-    style={{ 
-      backgroundImage: `url(${loginBg})`, 
-      backgroundSize: "cover", 
-      backgroundPosition: "center",
-      height: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center"
-  }}
     >
       {/* Header */}
       <header>
@@ -49,7 +40,7 @@ const Home = () => {
           <a href="/home">Home</a>
           <a href="/services">Service</a>
           <a href="#">Portfolio</a>
-          <a href="/contact">Contact Us</a>
+          <a href="/ContactUs">Contact Us</a>
         </nav>
         <button className="toggle-btn" onClick={toggleSidebar}>
           &#9776;
@@ -60,9 +51,9 @@ const Home = () => {
       <nav className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="logo">IntelLogixAI ♔</div>
         <a href="/home">Home</a>
-        <a href="/invoice">New Invoice</a>
-        <a href="/newcontact">Contacts</a>
-        <a href="#">Logout</a>
+        <a href="/InvoiceGenerator">New Invoice</a>
+        <a href="/ContactManager">Contacts</a>
+        <a href="/Dashboard">Logout</a>
       </nav>
 
       {/* Content */}

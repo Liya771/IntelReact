@@ -12,16 +12,6 @@ const Hero = () => {
       <Header /> {/* Include the Header at the top */}
       <div
         className="hero"
-        style={{
-          backgroundImage: `url(${HeroBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
       >
         <div className="hero-text">
           <h1>Business Manager</h1>

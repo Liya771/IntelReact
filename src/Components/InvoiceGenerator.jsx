@@ -9,8 +9,8 @@ const InvoiceGenerator = () => {
     customerName: "",
     customerAddress: "",
     customerEmail: "",
-    taxRate: 10,
-    items: [{ id: 1, description: "", quantity: 1, unitPrice: 0, total: 0 }],
+    taxPercentage: 0,
+    items: [{ id: 1, description: "", quantity: 1, unitPrice: 0, total: 0, taxPercentages: 0 }],
   });
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -20,6 +20,7 @@ const InvoiceGenerator = () => {
   };
 
   const handleItemChange = (index, field, value) => {
+    
     const updatedItems = [...invoice.items];
     updatedItems[index][field] = value;
     updatedItems[index].total =
@@ -44,7 +45,7 @@ const InvoiceGenerator = () => {
 
   const calculateTotals = () => {
     const subtotal = invoice.items.reduce((acc, item) => acc + item.total, 0);
-    const tax = (subtotal * invoice.taxRate) / 100;
+    const tax = (subtotal * invoice.taxPercentage) / 100;
     return {
       subtotal: subtotal.toFixed(2),
       tax: tax.toFixed(2),
@@ -58,7 +59,7 @@ const InvoiceGenerator = () => {
     const invoiceData = { ...invoice, ...totals };
 
     try {
-      const response = await fetch("http://localhost:3000/add-invoice", {
+      const response = await fetch("http://localhost:5000/add-invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(invoiceData),
@@ -93,43 +94,65 @@ const InvoiceGenerator = () => {
       <nav className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <div className="logo">IntelLogixAI ♔</div>
         <a href="/home">Home</a>
-        <a href="/invoice">New Invoice</a>
+        <a href="/InvoiceGenerator">New Invoice</a>
         <a href="#">Contacts</a>
         <a href="#">Logout</a>
       </nav>
 
+      {/*!-- Company Information --*/}
+      <div class="card mb-4">
+      <div class="card-body">
+        <h5>Company Information</h5>
+        <p><strong>IntelLogixAi Pvt. Ltd.</strong></p>
+        <p>Block A, 3rd Floor, Silicon Business Park, Outer Ring Road, Marathahalli, Bengaluru, Karnataka, 560103, India.</p>
+        <p><strong>Phone:</strong> +91-9876543210</p>
+      </div>
+    </div>
+
       {/* Invoice Form */}
+
       <div className="invoice-container">
         <h2>Invoice Generation</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Invoice Date</label>
-            <input type="date" id="invoiceDate" value={invoice.invoiceDate} onChange={handleChange} required />
+          <div className="row mb-3">
+            <div className="col-md-6">
+              <label>Invoice Date</label>
+              <input type="date" id="invoiceDate" value={invoice.invoiceDate} onChange={handleChange} required />
+            </div>
+
+            <div className="col-md-6">
+              <label>Invoice Number</label>
+              <input type="text" id="invoiceNumber" value={invoice.invoiceNumber} onChange={handleChange} required />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Invoice Number</label>
-            <input type="text" id="invoiceNumber" value={invoice.invoiceNumber} onChange={handleChange} required />
-          </div>
 
-          <div className="form-group">
+        <div className="mb-4">
+        <h5 style={{ color: "#000000" }}>Customer Information</h5>
+        <div className="row">
+          <div className="col-md-6">
             <label>Customer Name</label>
             <input type="text" id="customerName" value={invoice.customerName} onChange={handleChange} required />
           </div>
-
-          <div className="form-group">
+          <div className="col-md-6">
             <label>Customer Address</label>
             <textarea id="customerAddress" value={invoice.customerAddress} onChange={handleChange} required />
           </div>
+          </div>
+        </div>
 
-          <div className="form-group">
+
+
+          <div className="mb-4">
             <label>Customer Email</label>
             <input type="email" id="customerEmail" value={invoice.customerEmail} onChange={handleChange} required />
           </div>
 
-          <div className="form-group">
+
+
+          <div className="mb-4">
             <label>Tax Rate (%)</label>
-            <input type="number" id="taxRate" value={invoice.taxRate} onChange={handleChange} min="0" step="0.1" required />
+            <input type="number" id="taxPercentage" value={invoice.taxPercentage} onChange={handleChange} min="0" step="0.1" required />
           </div>
 
           <h4>Invoice Items</h4>
@@ -159,7 +182,7 @@ const InvoiceGenerator = () => {
                   </td>
                   <td>{item.total.toFixed(2)}</td>
                   <td>
-                    <button type="button" onClick={() => removeItem(index)}>❌</button>
+                    <button type="button" onClick={() => removeItem(index)}>-</button>
                   </td>
                 </tr>
               ))}

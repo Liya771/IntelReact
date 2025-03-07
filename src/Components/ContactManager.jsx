@@ -57,18 +57,7 @@ const ContactManager = () => {
   };
 
   return (
-    <div className="contact-manager"
-    style={{ 
-      backgroundImage: `url(${loginBg})`, 
-      backgroundSize: "cover", 
-      backgroundPosition: "center",
-      height: "100vh",
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center"
-  }}
-    >
+    <div className="contact-manager">
       <div id="contactList" className="contact-list">
         {contacts.map((contact) => (
           <div key={contact.id} className="contact-card">
@@ -82,7 +71,7 @@ const ContactManager = () => {
         ))}
       </div>
 
-      <div className="container">
+      <div className="con_container">
         <h2>Add Contact</h2>
         <input type="text" id="name" placeholder="Enter Name" value={formData.name} onChange={handleChange} />
         <input type="text" id="phone" placeholder="Enter Phone Number" value={formData.phone} onChange={handleChange} />

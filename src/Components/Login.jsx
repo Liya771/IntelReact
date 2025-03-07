@@ -26,7 +26,7 @@ const Login = () => {
   const validateLogin = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("/login", {
+      const response = await fetch("http://localhost:5000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -52,17 +52,8 @@ const Login = () => {
 
   return (
     <div 
-        className="container" 
-        style={{ 
-            backgroundImage: `url(${loginBg})`, 
-            backgroundSize: "cover", 
-            backgroundPosition: "center",
-            height: "100vh",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center"
-        }}
+        className="login-home-container" 
+        
     >
       <Header />
       <div className="login-container">

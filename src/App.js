@@ -6,7 +6,9 @@ import Hero from "./Components/Hero";
 import Signup from "./Components/Signup";
 import ContactUs from "./Components/ContactUs";
 import Services from "./Components/Services";
-
+import InvoiceGenerator from "./Components/InvoiceGenerator";
+import ContactManager from "./Components/ContactManager";
+import Dashboard from './Components/Dashboard';
 
 const App = () => {
   return (
@@ -17,6 +19,9 @@ const App = () => {
       <Route path="/Signup" element={<Signup />} />
       <Route path="/ContactUs" element={<ContactUs />} />
       <Route path="/Services" element={<Services/>} />
+      <Route path="/InvoiceGenerator" element={<InvoiceGenerator/>} />
+      <Route path="/ContactManager" element={<ContactManager/>} />
+      <Route path="/Dashboard" element={<Dashboard />} />
     </Routes>
   );
 };
