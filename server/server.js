@@ -10,7 +10,6 @@ const fs = require('fs');
 const PDFDocument = require('pdfkit');
 
 
-
 const app = express();
 const port = 5000
 const saltRounds = 10;
@@ -163,64 +162,110 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// **Add Invoice API**
+
+// add invoice api
 app.post('/add-invoice', async (req, res) => {
   const { invoiceDate, invoiceNumber, customerName, customerAddress, customerEmail, taxPercentage, items } = req.body;
 
-  console.log("Received tax value:", tax_percentage); // Debugging
-  if (!tax_percentage || isNaN(tax_percentage)) {
-    return res.status(400).json({ error: "Invalid tax percentage" });
-}
-
-
   try {
-    const invoiceResult = await pool.query(
+    const client = await pool.connect();
+    await client.query('BEGIN'); // Start transaction
+
+    // ✅ Add Invoice
+    const invoiceResult = await client.query(
       `INSERT INTO invoices (invoice_date, invoice_number, customer_name, customer_address, customer_email, tax_percentage) 
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING invoice_id;`,
       [invoiceDate, invoiceNumber, customerName, customerAddress, customerEmail, taxPercentage]
     );
 
-    console.log("Inserted invoice:", result.rows[0]); // Debugging
-
     const invoiceId = invoiceResult.rows[0].invoice_id;
 
+    // ✅ Add Invoice Items
     for (const item of items) {
-      await pool.query(
-        `INSERT INTO invoice_items (invoice_id, description, quantity, unit_price) 
-         VALUES ($1, $2, $3, $4)`,
-        [invoiceId, item.description, item.quantity, item.unitPrice]
+      await client.query(
+        `INSERT INTO invoice_items (invoice_id, description, quantity, unit_price, tax_percentage) 
+         VALUES ($1, $2, $3, $4, $5)`,
+        [invoiceId, item.description, item.quantity, item.unitPrice, item.taxPercentages]
       );
     }
+
+    // ✅ Automatically Add Contact if not exists
+    await client.query(
+      `INSERT INTO contacts (name, address, email) 
+       VALUES ($1, $2, $3)
+       ON CONFLICT (email) DO NOTHING;`,
+      [customerName, customerAddress, customerEmail]
+    );
+
+    await client.query('COMMIT'); // Commit transaction
+    client.release();
 
     // ✅ Ensure invoices folder exists
     const invoicesFolder = './invoices';
     if (!fs.existsSync(invoicesFolder)) {
-        fs.mkdirSync(invoicesFolder, { recursive: true });
+      fs.mkdirSync(invoicesFolder, { recursive: true });
     }
 
     // ✅ Generate PDF Invoice
     const pdfPath = `./invoices/invoice_${invoiceNumber}.pdf`;
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({ margin: 50 });
     doc.pipe(fs.createWriteStream(pdfPath));
-
-    doc.fontSize(20).text('Invoice', { align: 'center' });
-    doc.fontSize(14).text(`Invoice Number: ${invoiceNumber}`);
-    doc.text(`Date: ${invoiceDate}`);
-    doc.text(`Customer: ${customerName}`);
-    doc.text(`Address: ${customerAddress}`);
-    doc.text(`Email: ${customerEmail}`);
-    doc.text(`Address: ${customerAddress}`);
-    doc.text(`Tax: ${taxPercentage}%`);
+    doc.fontSize(20).text('Invoice', { align: 'center' }).moveDown();
+    doc.fontSize(14)
+      .text(`Invoice Number: ${invoiceNumber}`)
+      .text(`Date: ${invoiceDate}`)
+      .text(`Customer: ${customerName}`)
+      .text(`Address: ${customerAddress}`)
+      .text(`Email: ${customerEmail}`)
+      .text(`Tax Rate: ${taxPercentage}%`)
+      .moveDown(1);
+    
+    doc.fontSize(12).text('Items:', { underline: true });
     doc.moveDown();
 
-    doc.fontSize(12).text('Items:', { underline: true });
+    const tableTop = doc.y;
+    const startX = 50;
+    const columnWidths = [30, 200, 60, 80, 80, 80];
+    const tableWidth = columnWidths.reduce((a, b) => a + b, 0);
+    const rowHeight = 20;
+
+    doc.rect(startX, tableTop, tableWidth, rowHeight).fill('#f0f0f0');
+    doc.fillColor('black').font('Helvetica-Bold')
+      .text('No', startX, tableTop + 5, { width: columnWidths[0], align: 'center' })
+      .text('Description', startX + columnWidths[0], tableTop + 5, { width: columnWidths[1] })
+      .text('Qty', startX + columnWidths[0] + columnWidths[1], tableTop + 5, { width: columnWidths[2], align: 'center' })
+      .text('Unit Price', startX + columnWidths[0] + columnWidths[1] + columnWidths[2], tableTop + 5, { width: columnWidths[3], align: 'right' })
+      .text('Tax', startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], tableTop + 5, { width: columnWidths[4], align: 'right' })
+      .text('Total', startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4], tableTop + 5, { width: columnWidths[5], align: 'right' });
+    doc.moveTo(startX, tableTop + rowHeight).lineTo(startX + tableWidth, tableTop + rowHeight).stroke();
+
+    let totalAmount = 0;
+    let yPos = tableTop + rowHeight;
+
     items.forEach((item, index) => {
-      doc.text(`${index + 1}. ${item.description} - ${item.quantity} x $${item.unitPrice.toFixed(2)}`);
+      const itemTotal = item.quantity * item.unitPrice;
+      const itemTax = itemTotal * (taxPercentage / 100);
+      const itemTotalWithTax = itemTotal + itemTax;
+      totalAmount += itemTotalWithTax;
+
+      if (index % 2 === 0) {
+        doc.rect(startX, yPos, tableWidth, rowHeight).fill('#fafafa');
+      }
+
+      doc.fillColor('black').font('Helvetica')
+        .text(index + 1, startX, yPos + 5, { width: columnWidths[0], align: 'center' })
+        .text(item.description, startX + columnWidths[0], yPos + 5, { width: columnWidths[1] })
+        .text(item.quantity, startX + columnWidths[0] + columnWidths[1], yPos + 5, { width: columnWidths[2], align: 'center' })
+        .text(`$${item.unitPrice.toFixed(2)}`, startX + columnWidths[0] + columnWidths[1] + columnWidths[2], yPos + 5, { width: columnWidths[3], align: 'right' })
+        .text(`$${itemTax.toFixed(2)}`, startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3], yPos + 5, { width: columnWidths[4], align: 'right' })
+        .text(`$${itemTotalWithTax.toFixed(2)}`, startX + columnWidths[0] + columnWidths[1] + columnWidths[2] + columnWidths[3] + columnWidths[4], yPos + 5, { width: columnWidths[5], align: 'right' });
+
+      yPos += rowHeight;
     });
 
+    doc.font('Helvetica-Bold').text(`Grand Total: $${totalAmount.toFixed(2)}`, { align: 'right' });
     doc.end();
 
-    // ✅ Send Email with PDF Attachment (After a short delay)
     setTimeout(() => {
       const mailOptions = {
         from: process.env.EMAIL_USER,
@@ -247,10 +292,14 @@ app.post('/add-invoice', async (req, res) => {
 
 
 
+
 app.use(cors({
     origin: 'http://localhost:3000', // Allow frontend requests
     credentials: true // Allow sending cookies
 }));
+
+
+
 
 
 // 🔹 **Logout Route** (Removes the JWT)
