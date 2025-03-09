@@ -9,6 +9,7 @@ import Services from "./Components/Services";
 import InvoiceGenerator from "./Components/InvoiceGenerator";
 import ContactManager from "./Components/ContactManager";
 import Dashboard from './Components/Dashboard';
+import Quotation from './Components/Quotation';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
       <Route path="/Services" element={<Services/>} />
       <Route path="/InvoiceGenerator" element={<InvoiceGenerator/>} />
       <Route path="/ContactManager" element={<ContactManager/>} />
+      <Route path="/Quotation" element={<Quotation/>} />
       <Route path="/Dashboard" element={<Dashboard />} />
     </Routes>
   );

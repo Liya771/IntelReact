@@ -10,7 +10,7 @@ const Header = () => {
       <nav className="nav-links">
         <a href="/">Home</a>
         <a href="/services">Service</a>
-        <a href="#">Portfolio</a>
+        <a href="/InvoiceGenerator">Portfolio</a>
         <a href="/contact">Contact Us</a>
       </nav>
     </header>
@@ -59,23 +59,25 @@ const Login = () => {
       <div className="login-container">
         <h2>Login</h2>
         <form onSubmit={validateLogin}>
-          <label htmlFor="email">Email:</label>
+          <label className="label1" htmlFor="email">Email:</label>
           <input
             type="email"
             id="email"
+            className="input1"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          <label htmlFor="password">Password:</label>
+          <label className="label1"htmlFor="password">Password:</label>
           <input
+          className="input1"
             type="password"
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <button type="submit">Login</button>
+          <button  className="bu" type="submit">Login</button>
           <p>Don't have an account? <a href="/signup">Sign Up</a></p>
           {errorMessage && <p className="error-message">{errorMessage}</p>}
         </form>

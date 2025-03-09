@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
-import signupBg from "./Assets/login.jpg"; 
 import "./Signup.css"; // Import the CSS file
 
 const Signup = () => {

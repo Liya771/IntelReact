@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const cors = require('cors');
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
@@ -14,14 +15,16 @@ const app = express();
 const port = 5000
 const saltRounds = 10;
 
-const path = require('path');
+
+app.use(cors());
 
 // Serve React frontend
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
-});
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+})
+
 
 
 // Database Connection
@@ -287,6 +290,34 @@ app.post('/add-invoice', async (req, res) => {
   } catch (err) {
     console.error('Error adding invoice:', err);
     res.status(500).json({ error: 'Error while adding invoice.' });
+  }
+});
+
+// contact 
+app.get("/get-contacts", async (req, res) => {
+  try {
+      const result = await pool.query("SELECT * FROM contacts");
+      res.json(result.rows);  // ✅ Make sure you're sending JSON
+  } catch (err) {
+      console.error("Error fetching contacts:", err);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+app.put("/update-contact/:id", async (req, res) => {
+  const { id } = req.params;
+  const { phone, department, company } = req.body;
+
+  try {
+      await pool.query(
+          "UPDATE contacts SET phone_number = $1, department = $2, company_name = $3 WHERE id = $4",
+          [phone, department, company, id]
+      );
+      res.json({ message: "Contact updated successfully" });
+  } catch (error) {
+      console.error("Error updating contact:", error);
+      res.status(500).json({ error: "Failed to update contact" });
   }
 });
 

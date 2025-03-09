@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import "./InvoiceGenerator.css"; // Importing CSS
 
@@ -10,7 +11,7 @@ const InvoiceGenerator = () => {
     customerAddress: "",
     customerEmail: "",
     taxPercentage: 0,
-    items: [{ id: 1, description: "", quantity: 1, unitPrice: 0, total: 0, taxPercentages: 0 }],
+    items: [{ id: 1, description: "", quantity: 1, unitPrice: 0, total: 0, taxPercentages: 0  }],
   });
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -20,21 +21,16 @@ const InvoiceGenerator = () => {
   };
 
   const handleItemChange = (index, field, value) => {
-    
     const updatedItems = [...invoice.items];
     updatedItems[index][field] = value;
-    updatedItems[index].total =
-      updatedItems[index].quantity * updatedItems[index].unitPrice;
+    updatedItems[index].total = updatedItems[index].quantity * updatedItems[index].unitPrice;
     setInvoice({ ...invoice, items: updatedItems });
   };
 
   const addItem = () => {
     setInvoice({
       ...invoice,
-      items: [
-        ...invoice.items,
-        { id: invoice.items.length + 1, description: "", quantity: 1, unitPrice: 0, total: 0 },
-      ],
+      items: [...invoice.items, { id: invoice.items.length + 1, description: "", quantity: 1, unitPrice: 0, total: 0 }],
     });
   };
 
@@ -99,64 +95,55 @@ const InvoiceGenerator = () => {
         <a href="#">Logout</a>
       </nav>
 
-      {/*!-- Company Information --*/}
-      <div class="card mb-4">
-      <div class="card-body">
-        <h5>Company Information</h5>
-        <p><strong>IntelLogixAi Pvt. Ltd.</strong></p>
-        <p>Block A, 3rd Floor, Silicon Business Park, Outer Ring Road, Marathahalli, Bengaluru, Karnataka, 560103, India.</p>
-        <p><strong>Phone:</strong> +91-9876543210</p>
-      </div>
-    </div>
-
-      {/* Invoice Form */}
-
-      <div className="invoice-container">
-        <h2>Invoice Generation</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="row mb-3">
-            <div className="col-md-6">
-              <label>Invoice Date</label>
-              <input type="date" id="invoiceDate" value={invoice.invoiceDate} onChange={handleChange} required />
-            </div>
-
-            <div className="col-md-6">
-              <label>Invoice Number</label>
-              <input type="text" id="invoiceNumber" value={invoice.invoiceNumber} onChange={handleChange} required />
-            </div>
-          </div>
-
-
-        <div className="mb-4">
-        <h5 style={{ color: "#000000" }}>Customer Information</h5>
-        <div className="row">
-          <div className="col-md-6">
-            <label>Customer Name</label>
-            <input type="text" id="customerName" value={invoice.customerName} onChange={handleChange} required />
-          </div>
-          <div className="col-md-6">
-            <label>Customer Address</label>
-            <textarea id="customerAddress" value={invoice.customerAddress} onChange={handleChange} required />
-          </div>
+      {/* Company Information */}
+      <div className="card1">
+        <div className="card-body">
+          <h5>Company Information</h5>
+          <div className="c">
+            <p><strong>IntelLogixAi Pvt. Ltd.</strong></p>
+            <p>Block A, 3rd Floor, Silicon Business Park, Outer Ring Road, Marathahalli, Bengaluru, Karnataka, 560103, India.</p>
+            <p><strong>Phone:</strong> +91-9876543210</p>
           </div>
         </div>
+      </div>
 
-
-
-          <div className="mb-4">
-            <label>Customer Email</label>
-            <input type="email" id="customerEmail" value={invoice.customerEmail} onChange={handleChange} required />
+      {/* Invoice Form */}
+      <div className="card-body1">
+        <h2>Invoice Generation</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="rowmb">
+            <div className="col-md-6 form-group">
+              <label className="form-label">Invoice Date</label>
+              <input type="date" id="invoiceDate" className="form-control" value={invoice.invoiceDate} onChange={handleChange} required />            
+              <label className="form-label">Invoice Number</label>
+              <input type="text" id="invoiceNumber" className="form-control" value={invoice.invoiceNumber} onChange={handleChange} required />
+            </div>
           </div>
 
+          {/* Customer Info */}
+          <h5>Customer Information</h5>
+          <div className="row">
+            <div className="col-md-6 form-group">
+              <label className="form-label">Customer Name</label>
+              <input type="text" id="customerName" className="form-control" value={invoice.customerName} onChange={handleChange} required />
+            </div>
+            <div className="col-md-6 form-group">
+              <label className="form-label">Customer Address</label>
+              <textarea id="customerAddress" className="form-control" value={invoice.customerAddress} onChange={handleChange} required />
+            </div>
+          </div>
 
-
-          <div className="mb-4">
-            <label>Tax Rate (%)</label>
+          <div className="form-group">
+            <label className="form-label">Customer Email</label>
+            <input type="email" id="customerEmail" className="form-control" value={invoice.customerEmail} onChange={handleChange} required />
+          </div>
+          <div className="tax">
+            <label>Tax Rate (%) &nbsp;</label>
             <input type="number" id="taxPercentage" value={invoice.taxPercentage} onChange={handleChange} min="0" step="0.1" required />
           </div>
 
           <h4>Invoice Items</h4>
-          <table>
+          <table className="table">
             <thead>
               <tr>
                 <th>#</th>
@@ -171,36 +158,34 @@ const InvoiceGenerator = () => {
               {invoice.items.map((item, index) => (
                 <tr key={item.id}>
                   <td>{index + 1}</td>
-                  <td>
-                    <input type="text" value={item.description} onChange={(e) => handleItemChange(index, "description", e.target.value)} required />
-                  </td>
-                  <td>
-                    <input type="number" value={item.quantity} onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))} min="1" required />
-                  </td>
-                  <td>
-                    <input type="number" value={item.unitPrice} onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value))} step="0.01" required />
-                  </td>
+                  <td><input type="text" className="form-control" value={item.description} onChange={(e) => handleItemChange(index, "description", e.target.value)} required /></td>
+                  <td><input type="number" className="form-control" value={item.quantity} onChange={(e) => handleItemChange(index, "quantity", parseFloat(e.target.value))} min="1" required /></td>
+                  <td><input type="number" className="form-control" value={item.unitPrice} onChange={(e) => handleItemChange(index, "unitPrice", parseFloat(e.target.value))} step="0.01" required /></td>
                   <td>{item.total.toFixed(2)}</td>
-                  <td>
-                    <button type="button" onClick={() => removeItem(index)}>-</button>
-                  </td>
+                  <td><button type="button" className="btn btn-danger" onClick={() => removeItem(index)}>Remove</button></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <button type="button" onClick={addItem}>➕ Add Item</button>
+          <button type="button" className="btn btn-primary" onClick={addItem}>Add Item</button>
+          <div className="invoice-totals">
+            <p><strong>Subtotal:</strong> ${subtotal}</p>
+            <p><strong>Tax ({invoice.taxPercentage}%):</strong> ${tax}</p><br></br>
+            <p className="pp"><strong>Total:</strong> ${total}</p>
+            </div>
 
-          <div className="totals">
-            <p>Subtotal: ${subtotal}</p>
-            <p>Tax: ${tax}</p>
-            <h3>Total: ${total}</h3>
-          </div>
-
-          <button type="submit">Generate Invoice</button>
+          <button type="submit" className="btn btn-success">Generate Invoice</button>
         </form>
       </div>
+      {/* Invoice Totals */}
+
+
     </div>
   );
 };
 
 export default InvoiceGenerator;
+
+
+
+

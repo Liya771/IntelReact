@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
 import "./Hero.css";
-import HeroBg from "./Assets/home.webp";
+
 import Header from "./Header"; // Import the Header component
 
 const Hero = () => {
