@@ -18,6 +18,7 @@ const Home = () => {
       contactus : "/ContactUs",
       invoice: "/InvoiceGenerator",
       contact: "/ContactManager",
+      quotation : "/Quotation",
       logout : "/Dashboard",
     };
 
@@ -52,6 +53,7 @@ const Home = () => {
         <div className="logo">IntelLogixAI ♔</div>
         <a href="/home">Home</a>
         <a href="/InvoiceGenerator">New Invoice</a>
+        <a href="/Quotation">Quotation</a>
         <a href="/ContactManager">Contacts</a>
         <a href="/Dashboard">Logout</a>
       </nav>
