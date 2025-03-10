@@ -293,32 +293,32 @@ app.post('/add-invoice', async (req, res) => {
   }
 });
 
-// contact 
-app.get("/get-contacts", async (req, res) => {
+
+// ✅ Get All Contacts
+app.get("/contacts", async (req, res) => {
   try {
-      const result = await pool.query("SELECT * FROM contacts");
-      res.json(result.rows);  // ✅ Make sure you're sending JSON
-  } catch (err) {
-      console.error("Error fetching contacts:", err);
-      res.status(500).json({ error: "Internal Server Error" });
+      const result = await pool.query("SELECT * FROM add_contacts");
+      res.json(result.rows);
+  } catch (error) {
+      console.error("Error fetching contacts:", error);
+      res.status(500).json({ error: "Server error" });
   }
 });
-app.put("/update-contact/:id", async (req, res) => {
-  const { id } = req.params;
-  const { phone, department, company } = req.body;
 
+// ✅ Add new contact
+app.post("/contacts", async (req, res) => {
+  const { name, phone, email, address, company, photo } = req.body;
   try {
       await pool.query(
-          "UPDATE contacts SET phone_number = $1, department = $2, company_name = $3 WHERE id = $4",
-          [phone, department, company, id]
+          "INSERT INTO add_contacts (name, phone, email, address, company, photo) VALUES ($1, $2, $3, $4, $5, $6)",
+          [name, phone, email, address, company, photo]
       );
-      res.json({ message: "Contact updated successfully" });
+      res.status(201).json({ message: "Contact added successfully" });
   } catch (error) {
-      console.error("Error updating contact:", error);
-      res.status(500).json({ error: "Failed to update contact" });
+      console.error("Error adding contact:", error);
+      res.status(500).json({ error: "Server error" });
   }
 });
-
 
 
 

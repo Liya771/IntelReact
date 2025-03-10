@@ -1,109 +1,146 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./ContactManager.css";
 
 const ContactManager = () => {
     const [contacts, setContacts] = useState([]);
-    const [editingContact, setEditingContact] = useState(null);
-    const [updatedDetails, setUpdatedDetails] = useState({});
 
-    // Fetch contacts from the database
-    const fetchContacts = () => {
-      console.log("Fetching contacts..."); // ✅ Check if this runs
-      fetch("http://localhost:5000/get-contacts")
-          .then(response => response.json())
-          .then(data => {
-              console.log("Updated contacts:", data); // ✅ Check received data
-              setContacts([...data]); // 🔄 Ensure re-render
-          })
-          .catch(error => console.error("Error fetching contacts:", error));
-  };
+    const [newContact, setNewContact] = useState({
+        name: "",
+        phone: "",
+        email: "",
+        address: "",
+        company: "",
+        photo: null,
+    });
 
+    // ✅ Load contacts from localStorage on page load
     useEffect(() => {
-        fetchContacts(); // Fetch contacts on component mount
+        const savedContacts = localStorage.getItem("contacts");
+        if (savedContacts) {
+            setContacts(JSON.parse(savedContacts));
+        }
     }, []);
 
-    // Handle edit button click
-    const handleEditClick = (contact) => {
-        setEditingContact(contact.id);
-        setUpdatedDetails(contact); // Pre-fill form with existing details
-    };
+    // ✅ Save contacts to localStorage whenever contacts change
+    useEffect(() => {
+        localStorage.setItem("contacts", JSON.stringify(contacts));
+    }, [contacts]);
 
-    // Handle input changes
+    // ✅ Handle Input Change
     const handleInputChange = (e) => {
-        setUpdatedDetails({ ...updatedDetails, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setNewContact({ ...newContact, [name]: value });
     };
 
-    // Save edited contact details
-    const handleSave = () => {
-        fetch(`http://localhost:5000/update-contact/${editingContact}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(updatedDetails),
-        })
-        .then(response => response.json())
-        .then(() => {
-            fetchContacts(); // Refresh contacts list
-            setEditingContact(null); // Exit edit mode
-        })
-        .catch(error => console.error("Error updating contact:", error));
+    // ✅ Handle Photo Upload
+    const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setNewContact({ ...newContact, photo: event.target.result });
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // ✅ Add Contact
+    const addContact = (e) => {
+        e.preventDefault();
+        if (
+            newContact.name &&
+            newContact.phone &&
+            newContact.email &&
+            newContact.address &&
+            newContact.company &&
+            newContact.photo
+        ) {
+            const updatedContacts = [newContact, ...contacts];
+            setContacts(updatedContacts); // Update contacts state
+            setNewContact({
+                name: "",
+                phone: "",
+                email: "",
+                address: "",
+                company: "",
+                photo: null,
+            });
+            document.getElementById("photo").value = ""; // Reset file input
+        } else {
+            alert("Please enter all contact details including a photo");
+        }
     };
 
     return (
-        <div className="contact-container">
-            <h2 className="title">📇 Contact Manager</h2>
-            <table className="contact-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Phone</th>
-                        <th>Email</th>
-                        <th>Department</th>
-                        <th>Company</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {contacts.length > 0 ? (
-                        contacts.map(contact => (
-                            <tr key={contact.id}>
-                                {editingContact === contact.id ? (
-                                    <>
-                                        <td>{contact.name}</td>
-                                        <td>
-                                            <input type="text" name="phone" value={updatedDetails.phone} onChange={handleInputChange} />
-                                        </td>
-                                        <td>{contact.email || "N/A"}</td>
-                                        <td>
-                                            <input type="text" name="department" value={updatedDetails.department || ""} onChange={handleInputChange} />
-                                        </td>
-                                        <td>
-                                            <input type="text" name="company" value={updatedDetails.company || ""} onChange={handleInputChange} />
-                                        </td>
-                                        <td>
-                                            <button onClick={handleSave} className="save-btn">Save</button>
-                                        </td>
-                                    </>
-                                ) : (
-                                    <>
-                                        <td>{contact.name}</td>
-                                        <td>{contact.phone}</td>
-                                        <td>{contact.email || "N/A"}</td>
-                                        <td>{contact.department || "N/A"}</td>
-                                        <td>{contact.company || "N/A"}</td>
-                                        <td>
-                                            <button onClick={() => handleEditClick(contact)} className="edit-btn">Edit</button>
-                                        </td>
-                                    </>
-                                )}
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan="6" className="no-data">No contacts available</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+        <div className="contact-page">
+            <div id="contactList" className="contact-list">
+                {contacts.length > 0 ? (
+                    contacts.map((contact, index) => (
+                        <div key={index} className="contact-card">
+                            <img src={contact.photo} alt="Profile" />
+                            <strong>{contact.name}</strong>
+                            <p>📞 {contact.phone}</p>
+                            <p>📧 {contact.email}</p>
+                            <p>🏠 {contact.address}</p>
+                            <p>🏢 {contact.company}</p>
+                        </div>
+                    ))
+                ) : (
+                    <p>No contacts available</p>
+                )}
+            </div>
+
+            <div className="h_container">
+                <h2>Add Contact</h2>
+                <input
+                    type="text"
+                    name="name"
+                    placeholder="Enter Name"
+                    value={newContact.name}
+                    onChange={handleInputChange}
+                    required
+                />
+                <input
+                    type="text"
+                    name="phone"
+                    placeholder="Enter Phone Number"
+                    value={newContact.phone}
+                    onChange={handleInputChange}
+                    required
+                />
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter Email"
+                    value={newContact.email}
+                    onChange={handleInputChange}
+                    required
+                />
+                <input
+                    type="text"
+                    name="address"
+                    placeholder="Enter Address"
+                    value={newContact.address}
+                    onChange={handleInputChange}
+                    required
+                />
+                <input
+                    type="text"
+                    name="company"
+                    placeholder="Enter Company Name"
+                    value={newContact.company}
+                    onChange={handleInputChange}
+                    required
+                />
+                <input
+                    type="file"
+                    id="photo"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    required
+                />
+                <button onClick={addContact}>Add Contact</button>
+            </div>
         </div>
     );
 };
