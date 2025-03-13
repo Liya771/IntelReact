@@ -442,10 +442,12 @@ app.post("/quotations", async (req, res) => {
       }
     });
 
-    res.json({ message: "Quotation created and emailed successfully", quotationId });
-  } catch (err) {
+    return res.json({ success: true, message: "Quotation created and emailed successfully", quotationId });
+
+  } 
+  catch (err) {
     console.error("Error creating quotation:", err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 });
 
