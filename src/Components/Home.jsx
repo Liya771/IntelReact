@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./Home.css";
 import loginBg from "./Assets/login.jpg"; 
+import Chatbot from "./Chatbot";
 
 const Home = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,6 +20,8 @@ const Home = () => {
       invoice: "/InvoiceGenerator",
       contact: "/ContactManager",
       quotation : "/Quotation",
+      topsales : "/TopSaledProducts",
+      chatbot : "/Chatbot",
       logout : "/Dashboard",
     };
 
@@ -55,6 +58,8 @@ const Home = () => {
         <a href="/InvoiceGenerator">New Invoice</a>
         <a href="/Quotation">Quotation</a>
         <a href="/ContactManager">Contacts</a>
+        <a href="/TopSaledProducts">Top_Sales</a>
+        <a href="/Chatbot">ChatBot</a>
         <a href="/Dashboard">Logout</a>
       </nav>
 

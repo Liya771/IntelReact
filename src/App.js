@@ -10,7 +10,8 @@ import InvoiceGenerator from "./Components/InvoiceGenerator";
 import ContactManager from "./Components/ContactManager";
 import Dashboard from './Components/Dashboard';
 import Quotation from './Components/Quotation';
-
+import Chatbot from './Components/Chatbot';
+import TopSaledProducts from './Components/TopSaledProducts';
 const App = () => {
   return (
     <Routes>
@@ -24,6 +25,8 @@ const App = () => {
       <Route path="/ContactManager" element={<ContactManager/>} />
       <Route path="/Quotation" element={<Quotation/>} />
       <Route path="/Dashboard" element={<Dashboard />} />
+      <Route path="/Chatbot" element={<Chatbot />} />
+      <Route path="/TopSaledProducts" element={<TopSaledProducts />} />
     </Routes>
   );
 };

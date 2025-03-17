@@ -9,6 +9,8 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto'); // For OTP generation
 const fs = require('fs');
 const PDFDocument = require('pdfkit');
+const router = express.Router();
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 
 const app = express();
@@ -21,9 +23,9 @@ app.use(cors());
 // Serve React frontend
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "public", "index.html"));
-})
+// app.get("*", (req, res) => {
+//     res.sendFile(path.join(__dirname, "..", "public", "index.html"));
+// })
 
 
 
@@ -452,6 +454,7 @@ app.post("/quotations", async (req, res) => {
 });
 
 
+//logout
 app.use(cors({
     origin: 'http://localhost:3000', // Allow frontend requests
     credentials: true // Allow sending cookies
@@ -473,6 +476,58 @@ app.get('/api/protected', (req, res) => {
   } catch {
       res.status(403).json({ message: 'Invalid token' });
   }
+});
+
+
+
+//top_sales
+app.get("/top-saled-products", async (req, res) => {
+  try {
+      console.log("Fetching top sold products...");
+      const result = await pool.query(`
+          SELECT description AS product_name, SUM(quantity) AS total_quantity_sold
+          FROM invoice_items
+          GROUP BY description
+          ORDER BY total_quantity_sold DESC
+          LIMIT 10;
+      `);
+      console.log("Query Executed. Result:", result.rows); // Debugging log
+      res.json(result.rows);
+  } catch (error) {
+      console.error("❌ Error fetching data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
+//chst-bot
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+app.post("/chat", async (req, res) => {
+    try {
+        const { message } = req.body;
+        if (!message) {
+            return res.status(400).json({ error: "Message is required!" });
+        }
+
+        console.log("User Query:", message); // ✅ Debug Input
+
+        const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" });
+        const result = await model.generateContent(message);
+
+        console.log("API Response:", result); // ✅ Debug API Response
+
+        if (!result || !result.response || !result.response.text) {
+            throw new Error("Invalid response from Gemini API");
+        }
+
+        res.json({ reply: result.response.text() });
+    } catch (error) {
+        console.error("Chatbot Backend Error:", error);
+        res.status(500).json({ error: "Error processing request" });
+    }
 });
 
 // **Start Server**
