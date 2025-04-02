@@ -54,7 +54,6 @@ const InvoiceGenerator = () => {
     const totals = calculateTotals();
     const invoiceData = { ...invoice, ...totals };
 
-    try {
       const response = await fetch("http://localhost:5000/add-invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,10 +61,7 @@ const InvoiceGenerator = () => {
       });
       const result = await response.json();
       alert(result.success ? "Invoice submitted successfully!" : "Failed to submit invoice");
-    } catch (error) {
-      console.error("Error submitting invoice:", error);
-      alert("An error occurred while submitting the invoice.");
-    }
+    
   };
 
   const { subtotal, tax, total } = calculateTotals();

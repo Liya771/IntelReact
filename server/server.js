@@ -502,7 +502,7 @@ app.get("/top-saled-products", async (req, res) => {
 
 
 
-//chst-bot
+//chat-bot
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 app.post("/chat", async (req, res) => {

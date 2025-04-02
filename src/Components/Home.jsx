@@ -1,28 +1,29 @@
 import React, { useState } from "react";
 import "./Home.css";
-import loginBg from "./Assets/login.jpg"; 
-import Chatbot from "./Chatbot";
+import ForecastChart from "./ForecastChart"; // Import the ForecastChart component
 
 const Home = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Toggle Sidebar
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  // Handle Search Navigation
   const handleSearch = () => {
     const pages = {
       home: "/home",
       service: "/service",
       portfolio: "/portfolio",
-      contactus : "/ContactUs",
+      contactus: "/ContactUs",
       invoice: "/InvoiceGenerator",
       contact: "/ContactManager",
-      quotation : "/Quotation",
-      topsales : "/TopSaledProducts",
-      chatbot : "/Chatbot",
-      logout : "/Dashboard",
+      quotation: "/Quotation",
+      topsales: "/TopSaledProducts",
+      chatbot: "/Chatbot",
+      logout: "/Dashboard",
     };
 
     if (pages[searchQuery.toLowerCase().trim()]) {
@@ -35,8 +36,7 @@ const Home = () => {
   };
 
   return (
-    <div className="home-container"
-    >
+    <div className="home-container">
       {/* Header */}
       <header>
         <div className="logo">IntelLogixAI ♔</div>
@@ -58,14 +58,16 @@ const Home = () => {
         <a href="/InvoiceGenerator">New Invoice</a>
         <a href="/Quotation">Quotation</a>
         <a href="/ContactManager">Contacts</a>
-        <a href="/TopSaledProducts">Top_Sales</a>
+        <a href="/TopSaledProducts">Top Sales</a>
         <a href="/Chatbot">ChatBot</a>
         <a href="/Dashboard">Logout</a>
       </nav>
 
-      {/* Content */}
+      {/* Main Content */}
       <div className={`content ${sidebarOpen ? "shift" : ""}`}>
         <h1>Welcome to IntelLogixAI</h1>
+        
+        {/* Search Bar */}
         <div className="search-bar">
           <input
             type="text"
@@ -75,6 +77,14 @@ const Home = () => {
           />
           <button onClick={handleSearch}>Search</button>
         </div>
+
+        {/* Revenue Forecast Chart */}
+        <div className="chart-container">
+          <h2>📊 Revenue Forecast Chart</h2>
+          <ForecastChart />
+        </div>
+
+        
       </div>
     </div>
   );

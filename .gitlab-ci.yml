@@ -29,6 +29,8 @@ deploy:
   image: node:18
   script:
     - echo "Deploying to server..."
+    - npm install
+    - npm ci 
     - npm run build
   only:
     - main
