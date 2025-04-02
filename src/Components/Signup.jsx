@@ -28,11 +28,12 @@ const Signup = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/send-otp", {
+      const response = await fetch("http://52.22.49.178:5000/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: formData.email, fullname: formData.full_name }),
       });
+    
 
       if (response.ok) {
         alert("OTP sent to your email!");
