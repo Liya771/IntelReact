@@ -530,6 +530,18 @@ app.post("/chat", async (req, res) => {
     }
 });
 
+
+
+
+app.get('/test-db', async (req, res) => {
+  try {
+    res.status(200).json({ message: 'Backend is working!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
+
 // **Start Server**
 
 const PORT = process.env.PORT || 4000; // Change from 5000 to 4000
