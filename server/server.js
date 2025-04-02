@@ -531,8 +531,11 @@ app.post("/chat", async (req, res) => {
 });
 
 // **Start Server**
-const HOST = '0.0.0.0'; // Make sure this is set
 
-app.listen(PORT, HOST, () => {
-    console.log(`Server running at http://${HOST}:${PORT}`);
+app.get("/", (req, res) => {
+  res.send("Backend is working!"); // Simple test response
+});
+
+app.listen(5000, "0.0.0.0", () => {
+  console.log("Server running at http://0.0.0.0:5000");
 });
