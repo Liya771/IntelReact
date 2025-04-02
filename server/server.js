@@ -15,7 +15,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 const saltRounds = 10;
-const PORT = process.env.PORT || 5000;
+
 
 
 app.use(cors());
@@ -532,10 +532,8 @@ app.post("/chat", async (req, res) => {
 
 // **Start Server**
 
-app.get("/", (req, res) => {
-  res.send("Backend is working!"); // Simple test response
-});
+const PORT = process.env.PORT || 4000; // Change from 5000 to 4000
 
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server running at http://0.0.0.0:5000");
+app.listen(PORT, () => {
+  console.log(`Server running at http://0.0.0.0:${PORT}`);
 });
