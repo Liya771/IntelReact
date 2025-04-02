@@ -531,6 +531,8 @@ app.post("/chat", async (req, res) => {
 });
 
 // **Start Server**
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
+const HOST = '0.0.0.0'; // Make sure this is set
+
+app.listen(PORT, HOST, () => {
+    console.log(`Server running at http://${HOST}:${PORT}`);
 });
