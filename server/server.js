@@ -140,6 +140,12 @@ app.post('/verify-otp', async (req, res) => {
     console.error('Error registering user:', err);
     res.status(500).json({ error: 'Error while registering the user.' });
   }
+
+  console.log("Received Email:", email);
+  console.log("Stored OTP:", otpStore[email]?.otp);
+  console.log("Received OTP:", otp);
+  console.log("Stored Data:", otpStore);
+
 });
 
 // **Login API**
