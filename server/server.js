@@ -72,7 +72,17 @@ app.post('/send-otp', async (req, res) => {
 
   try {
     const otp = generateOTP();
-    otpStore[email] = { otp, expiresAt: Date.now() + 10 * 60 * 1000 }; // OTP valid for 10 minutes
+    otpStore[email] = {
+      otp,
+      expiresAt: Date.now() + 10 * 60 * 1000, // OTP valid for 10 minutes
+    };
+
+    // 🐛 Log to check what's stored
+    console.log("\n🚀 /send-otp CALLED");
+    console.log("📧 Email:", email);
+    console.log("👤 Full Name:", full_name);
+    console.log("🔐 OTP:", otp);
+    console.log("🗃️ OTP Store:", otpStore[email]);
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
@@ -83,30 +93,46 @@ app.post('/send-otp', async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error('Error sending OTP:', error);
+        console.error('❌ Error sending OTP:', error);
         return res.status(500).json({ error: 'Failed to send OTP. Please try again.' });
       }
+
+      console.log('✅ OTP Email sent:', info.response);
       res.json({ success: true, message: 'OTP sent successfully.' });
     });
   } catch (err) {
-    console.error('Error generating OTP:', err);
+    console.error('❌ Error generating OTP:', err);
     res.status(500).json({ error: 'An error occurred while generating OTP.' });
   }
 });
 
-// **Verify OTP and Register User**
+
+//verify otp
 app.post('/verify-otp', async (req, res) => {
   const { full_name, email, username, password, otp } = req.body;
-  console.log(full_name)
-  if (!otpStore[email] || otpStore[email].otp !== otp) {
-    return res.status(400).json({ error: 'Invalid or expired OTP.' });
+
+  console.log("\n🚀 /verify-otp CALLED");
+  console.log("📧 Email:", email);
+  console.log("🔐 Received OTP:", otp);
+  console.log("🗃️ OTP Store:", otpStore[email]);
+
+  // Check if OTP exists
+  if (!otpStore[email]) {
+    return res.status(400).json({ error: 'OTP not found. Please request a new one.' });
   }
 
+  // Check if OTP matches
+  if (otpStore[email].otp !== otp) {
+    return res.status(400).json({ error: 'Invalid OTP. Please check your email and try again.' });
+  }
+
+  // Check if OTP expired
   if (Date.now() > otpStore[email].expiresAt) {
     delete otpStore[email];
     return res.status(400).json({ error: 'OTP has expired. Please request a new one.' });
   }
 
+  // Validate password
   if (!isValidPassword(password)) {
     return res.status(400).json({
       error: 'Password must include uppercase, lowercase, number, and special character.',
@@ -115,13 +141,16 @@ app.post('/verify-otp', async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
+
     await pool.query(
       'INSERT INTO users (full_name, email, username, password) VALUES ($1, $2, $3, $4)',
       [full_name, email, username, hashedPassword]
     );
 
+    // Clean up OTP store
     delete otpStore[email];
 
+    // Send confirmation email
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -131,22 +160,19 @@ app.post('/verify-otp', async (req, res) => {
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
-        console.error('Error sending confirmation email:', error);
+        console.error('❌ Error sending confirmation email:', error);
         return res.status(500).json({ error: 'Account created, but email not sent.' });
       }
+
+      console.log('✅ Confirmation email sent:', info.response);
       res.json({ success: true, message: 'Account created successfully.' });
     });
   } catch (err) {
-    console.error('Error registering user:', err);
+    console.error('❌ Error registering user:', err);
     res.status(500).json({ error: 'Error while registering the user.' });
   }
-
-  console.log("Received Email:", email);
-  console.log("Stored OTP:", otpStore[email]?.otp);
-  console.log("Received OTP:", otp);
-  console.log("Stored Data:", otpStore);
-
 });
+
 
 // **Login API**
 app.post('/login', async (req, res) => {
