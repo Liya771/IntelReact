@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "./Header";
 import "./Signup.css"; // Import the CSS file
 
+
 const Signup = () => {
   const [formData, setFormData] = useState({
     full_name: "",
