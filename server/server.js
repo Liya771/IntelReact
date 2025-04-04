@@ -107,7 +107,7 @@ app.post('/send-otp', async (req, res) => {
 });
 
 
-//verify otp
+// **Verify OTP and Register User**
 app.post('/verify-otp', async (req, res) => {
   const { full_name, email, username, password, otp } = req.body;
 
@@ -122,9 +122,10 @@ app.post('/verify-otp', async (req, res) => {
   }
 
   // Check if OTP matches
-  if (otpStore[email].otp !== otp) {
-    return res.status(400).json({ error: 'Invalid OTP. Please check your email and try again.' });
+  if (!otpStore[email] || otpStore[email].otp !== String(otp)) {
+    return res.status(400).json({ error: 'Invalid or expired OTP.' });
   }
+  
 
   // Check if OTP expired
   if (Date.now() > otpStore[email].expiresAt) {
