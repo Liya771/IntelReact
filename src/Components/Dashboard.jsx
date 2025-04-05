@@ -8,7 +8,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchProtectedData = async () => {
             try {
-                const response = await fetch('http://localhost:5000/api/protected', {
+                const response = await fetch('http://52.22.49.178:5000/api/protected', {
                     method: 'GET',
                     credentials: 'include',
                 });
@@ -29,7 +29,7 @@ const Dashboard = () => {
     }, [navigate]);
 
     const handleLogout = async () => {
-        await fetch('http://localhost:5000/api/logout', { method: 'POST', credentials: 'include' });
+        await fetch('http://52.22.49.178:5000/api/logout', { method: 'POST', credentials: 'include' });
         navigate('/');
     };
 

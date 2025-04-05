@@ -15,7 +15,7 @@ const Chatbot = () => {
         setResponse(""); // Clear previous response
 
         try {
-            const res = await axios.post("http://localhost:5000/chat", { message: query });
+            const res = await axios.post("http://52.22.49.178:5000/chat", { message: query });
             setResponse(res.data.reply);
         } catch (error) {
             setResponse("❌ Error fetching response. Try again.");

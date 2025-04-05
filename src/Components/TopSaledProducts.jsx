@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./TopSaledProducts.css";
 
-const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+const API_URL = process.env.REACT_APP_API_URL || "http://52.22.49.178:5000";
 
 const TopSaledProducts = () => {
     const [topProducts, setTopProducts] = useState([]);

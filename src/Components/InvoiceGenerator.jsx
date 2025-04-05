@@ -54,7 +54,7 @@ const InvoiceGenerator = () => {
     const totals = calculateTotals();
     const invoiceData = { ...invoice, ...totals };
 
-      const response = await fetch("http://localhost:5000/add-invoice", {
+      const response = await fetch("http://52.22.49.178:5000/add-invoice", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(invoiceData),
