@@ -545,23 +545,25 @@ app.post("/chat", async (req, res) => {
             return res.status(400).json({ error: "Message is required!" });
         }
 
-        console.log("User Query:", message); // ✅ Debug Input
+        console.log("User Query:", message);
 
         const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-pro" });
         const result = await model.generateContent(message);
 
-        console.log("API Response:", result); // ✅ Debug API Response
+        console.log("API Raw Response:", result);
 
-        if (!result || !result.response || !result.response.text) {
+        if (!result || !result.response || typeof result.response.text !== "function") {
             throw new Error("Invalid response from Gemini API");
         }
 
-        res.json({ reply: result.response.text() });
+        const replyText = await result.response.text(); // ✅ Proper usage
+        res.json({ reply: replyText }); // ✅ Clean response for frontend
     } catch (error) {
         console.error("Chatbot Backend Error:", error);
         res.status(500).json({ error: "Error processing request" });
     }
 });
+
 
 
 
