@@ -48,6 +48,14 @@ const Signup = () => {
     }
   };
 
+  console.log("Sending to backend:", {
+    full_name: formData.full_name,
+    email: formData.email,
+    username: formData.username,
+    password: formData.password,
+    otp: formData.otp,
+  });
+  
   // Handle signup form submission
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -61,7 +69,13 @@ const Signup = () => {
       const response = await fetch("http://52.22.49.178:5000/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          full_name: formData.full_name,
+          email: formData.email,
+          username: formData.username,
+          password: formData.password,
+          otp: formData.otp,
+        }),
       });
 
       if (response.ok) {
